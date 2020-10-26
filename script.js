@@ -63,19 +63,27 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 const displayTransactions = function (transactions) {
   containerTransactions.innerHTML = "";
+  let d = 0;
+  let w = 0;
   transactions.forEach((trans, i) => {
     const type = trans > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
-    <div class="movements__type movements__type--${type}">${
-      i + 1
-    } ${type}t</div>
+    <div class="movements__type movements__type--${type}">${type === 'deposit' && d++ || w++} ${type}t</div>
     <div class="movements__date">3 days ago</div>
     <div class="movements__value">${trans}$</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
 };
-displayTransactions(account1.transactions);
+displayTransactions(account2.transactions);
+
+const displayBalance = function(transactions){
+  const balance = transactions.reduce(function(bal, cur){
+    return bal += cur;
+  }, 0);
+  labelBalance.textContent = `${balance}$`
+}
+displayBalance(account2.transactions);
 
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
