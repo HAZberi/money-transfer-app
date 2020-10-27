@@ -68,7 +68,9 @@ const displayTransactions = function (transactions) {
   transactions.forEach((trans, i) => {
     const type = trans > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
-    <div class="movements__type movements__type--${type}">${type === 'deposit' && d++ || w++} ${type}t</div>
+    <div class="movements__type movements__type--${type}">${
+      (type === "deposit" && d++) || w++
+    } ${type}t</div>
     <div class="movements__date">3 days ago</div>
     <div class="movements__value">${trans}$</div>
     </div>`;
@@ -77,13 +79,31 @@ const displayTransactions = function (transactions) {
 };
 displayTransactions(account2.transactions);
 
-const displayBalance = function(transactions){
-  const balance = transactions.reduce(function(bal, cur){
-    return bal += cur;
+const displayBalance = function (transactions) {
+  const balance = transactions.reduce(function (bal, cur) {
+    return (bal += cur);
   }, 0);
-  labelBalance.textContent = `${balance}$`
-}
+  labelBalance.textContent = `${balance}$`;
+};
 displayBalance(account2.transactions);
+
+const displaySummary = function (transactions) {
+  const deposits = transactions
+    .filter((tr) => tr > 0)
+    .reduce((sum, tr) => sum + tr);
+  labelSumIn.textContent = `${deposits}$`;
+  const withdrawals = transactions
+    .filter((tr) => tr < 0)
+    .reduce((sum, tr) => sum + tr);
+  labelSumOut.textContent = `${Math.abs(withdrawals)}$`;
+  const interest = transactions
+    .filter((tr) => tr > 0)
+    .map((tr) => (tr * account2.interestRate) / 100)
+    .filter(int => int>1)
+    .reduce((sum, int) => sum+int, 0);
+  labelSumInterest.textContent = `${interest}$`;
+};
+displaySummary(account2.transactions);
 
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -95,5 +115,3 @@ const createUsernames = function (accs) {
   });
 };
 createUsernames(accounts);
-
-
