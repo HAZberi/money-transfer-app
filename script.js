@@ -99,8 +99,8 @@ const displaySummary = function (transactions) {
   const interest = transactions
     .filter((tr) => tr > 0)
     .map((tr) => (tr * account2.interestRate) / 100)
-    .filter(int => int>1)
-    .reduce((sum, int) => sum+int, 0);
+    .filter((int) => int > 1)
+    .reduce((sum, int) => sum + int, 0);
   labelSumInterest.textContent = `${interest}$`;
 };
 displaySummary(account2.transactions);
