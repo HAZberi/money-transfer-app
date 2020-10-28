@@ -70,7 +70,7 @@ const displayTransactions = function (transactions) {
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">${
       (type === "deposit" && d++) || w++
-    } ${type}t</div>
+    } ${type}</div>
     <div class="movements__date">3 days ago</div>
     <div class="movements__value">${trans}$</div>
     </div>`;
@@ -153,7 +153,7 @@ btnTransfer.addEventListener("click", function (event) {
   //to prevent from submitting form
   event.preventDefault();
 
-  //getting user input
+  //get user input
   const amount = Number(inputTransferAmount.value);
   const recAcc = accounts.find((acc) => acc.username === inputTransferTo.value);
 
@@ -170,10 +170,23 @@ btnTransfer.addEventListener("click", function (event) {
   ) {
     currentUser.transactions.push(-amount);
     recAcc.transactions.push(amount);
-    console.log(currentUser, recAcc);
     //update account
     updateUI(currentUser);
   }
+});
+
+btnLoan.addEventListener("click", function (event) {
+  //to prevent from submitting form
+  event.preventDefault();
+  console.log();
+  //get user input
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentUser.transactions.some((tr) => tr > amount * 0.25)) {
+    currentUser.transactions.push(amount);
+    console.log(`Loan Successfully Approved`);
+  }
+  //update UI
+  updateUI(currentUser);
 });
 
 btnClose.addEventListener("click", function (event) {
