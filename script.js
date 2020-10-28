@@ -61,18 +61,19 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayTransactions = function (transactions) {
+const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = "";
+  const trans = sort ? [...transactions].sort((a, b)=>a-b): transactions;
   let d = 1;
   let w = 1;
-  transactions.forEach((trans, i) => {
-    const type = trans > 0 ? "deposit" : "withdrawal";
+  trans.forEach((tran, i) => {
+    const type = tran > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${type}">${
       (type === "deposit" && d++) || w++
     } ${type}</div>
     <div class="movements__date">3 days ago</div>
-    <div class="movements__value">${trans}$</div>
+    <div class="movements__value">${tran}$</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
@@ -125,6 +126,7 @@ const updateUI = function (account) {
 //Add Event Handelers
 
 let currentUser = {};
+let sorted = false;
 
 btnLogin.addEventListener("click", function (event) {
   //to prevent submitting form
@@ -208,4 +210,10 @@ btnClose.addEventListener("click", function (event) {
   //clear fields
   inputCloseUsername.value = inputClosePin.value = "";
   inputClosePin.blur();
+});
+
+btnSort.addEventListener("click", function(event){
+  event.preventDefault();
+  displayTransactions(currentUser.transactions, !sorted);
+  sorted = !sorted;
 });
