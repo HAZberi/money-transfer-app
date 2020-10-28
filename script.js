@@ -113,14 +113,14 @@ const createUsernames = function (accs) {
 };
 createUsernames(accounts);
 
-const updateUI = function(account){
-      //1. Display Transactions
-      displayTransactions(account.transactions);
-      //2. Display Balance
-      displayBalance(account);
-      //3. Display Summary
-      displaySummary(account);
-}
+const updateUI = function (account) {
+  //1. Display Transactions
+  displayTransactions(account.transactions);
+  //2. Display Balance
+  displayBalance(account);
+  //3. Display Summary
+  displaySummary(account);
+};
 
 //Add Event Handelers
 
@@ -165,13 +165,34 @@ btnTransfer.addEventListener("click", function (event) {
   if (
     amount > 0 &&
     recAcc &&
-    currentUser.balance >= amount &&
+    currentUser?.balance >= amount &&
     currentUser.username !== recAcc.username
   ) {
     currentUser.transactions.push(-amount);
     recAcc.transactions.push(amount);
     console.log(currentUser, recAcc);
-    //update account 
+    //update account
     updateUI(currentUser);
   }
+});
+
+btnClose.addEventListener("click", function (event) {
+  //to prevent from submitting form
+  event.preventDefault();
+  //checks user and pin
+  if (
+    currentUser.username === inputCloseUsername.value &&
+    currentUser.pin === Number(inputClosePin.value)
+  ) {
+    const delIndex = accounts.findIndex(
+      (acc) => acc.username === currentUser.username
+    );
+    accounts.splice(delIndex, 1);
+    containerApp.style.opacity = 0;
+    labelWelcome.textContent = `Log In to Get Started`;
+    console.log(`Account Successfully Closed`);
+  }
+  //clear fields
+  inputCloseUsername.value = inputClosePin.value = "";
+  inputClosePin.blur();
 });
