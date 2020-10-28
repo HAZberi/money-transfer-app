@@ -13,21 +13,21 @@ const account1 = {
 };
 
 const account2 = {
-  owner: "Jessica Davis",
+  owner: "Muhammad Omar Chohan",
   transactions: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
   interestRate: 1.5,
   pin: 2222,
 };
 
 const account3 = {
-  owner: "Steven Thomas Williams",
-  transactions: [200, -200, 340, -300, -20, 50, 400, -460],
+  owner: "Saifullah Khan Chughtai",
+  transactions: [200, -200, 340, -300, -20, 50, 4000, -460],
   interestRate: 0.7,
   pin: 3333,
 };
 
 const account4 = {
-  owner: "Sarah Smith",
+  owner: "Hasan Baig",
   transactions: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
@@ -63,8 +63,8 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 const displayTransactions = function (transactions) {
   containerTransactions.innerHTML = "";
-  let d = 0;
-  let w = 0;
+  let d = 1;
+  let w = 1;
   transactions.forEach((trans, i) => {
     const type = trans > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
@@ -77,33 +77,30 @@ const displayTransactions = function (transactions) {
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
 };
-displayTransactions(account2.transactions);
 
-const displayBalance = function (transactions) {
-  const balance = transactions.reduce(function (bal, cur) {
+const displayBalance = function (account) {
+  account.balance = account.transactions.reduce(function (bal, cur) {
     return (bal += cur);
   }, 0);
-  labelBalance.textContent = `${balance}$`;
+  labelBalance.textContent = `${account.balance}$`;
 };
-displayBalance(account2.transactions);
 
-const displaySummary = function (transactions) {
-  const deposits = transactions
+const displaySummary = function (account) {
+  const deposits = account.transactions
     .filter((tr) => tr > 0)
-    .reduce((sum, tr) => sum + tr);
+    .reduce((sum, tr) => sum + tr, 0);
   labelSumIn.textContent = `${deposits}$`;
-  const withdrawals = transactions
+  const withdrawals = account.transactions
     .filter((tr) => tr < 0)
-    .reduce((sum, tr) => sum + tr);
+    .reduce((sum, tr) => sum + tr, 0);
   labelSumOut.textContent = `${Math.abs(withdrawals)}$`;
-  const interest = transactions
+  const interest = account.transactions
     .filter((tr) => tr > 0)
-    .map((tr) => (tr * account2.interestRate) / 100)
+    .map((tr) => (tr * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
   labelSumInterest.textContent = `${interest}$`;
 };
-displaySummary(account2.transactions);
 
 const createUsernames = function (accs) {
   accs.forEach(function (acc) {
@@ -115,3 +112,66 @@ const createUsernames = function (accs) {
   });
 };
 createUsernames(accounts);
+
+const updateUI = function(account){
+      //1. Display Transactions
+      displayTransactions(account.transactions);
+      //2. Display Balance
+      displayBalance(account);
+      //3. Display Summary
+      displaySummary(account);
+}
+
+//Add Event Handelers
+
+let currentUser = {};
+
+btnLogin.addEventListener("click", function (event) {
+  //to prevent submitting form
+  event.preventDefault();
+  //1. Finding current User
+  currentUser = accounts.find(
+    (acc) => acc.username === inputLoginUsername.value
+  );
+  //2. Logs the current User
+  if (currentUser?.pin === Number(inputLoginPin.value)) {
+    console.log("LOGGED IN");
+    //3. Display UI and Welcome Message
+    containerApp.style.opacity = 1;
+    labelWelcome.textContent = `Welcome Back ${
+      currentUser.owner.split(" ")[0]
+    }`;
+    //3.1. Clear Fields and focus
+    inputLoginUsername.value = inputLoginPin.value = "";
+    inputLoginPin.blur();
+    //4. UpdateUI
+    updateUI(currentUser);
+  }
+});
+
+btnTransfer.addEventListener("click", function (event) {
+  //to prevent from submitting form
+  event.preventDefault();
+
+  //getting user input
+  const amount = Number(inputTransferAmount.value);
+  const recAcc = accounts.find((acc) => acc.username === inputTransferTo.value);
+
+  //clear fields
+  inputTransferAmount.value = inputTransferTo.value = "";
+  inputTransferAmount.blur();
+
+  //making transfers with checks
+  if (
+    amount > 0 &&
+    recAcc &&
+    currentUser.balance >= amount &&
+    currentUser.username !== recAcc.username
+  ) {
+    currentUser.transactions.push(-amount);
+    recAcc.transactions.push(amount);
+    console.log(currentUser, recAcc);
+    //update account 
+    updateUI(currentUser);
+  }
+});
