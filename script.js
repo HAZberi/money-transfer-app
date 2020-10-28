@@ -63,7 +63,7 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = "";
-  const trans = sort ? [...transactions].sort((a, b)=>a-b): transactions;
+  const trans = sort ? [...transactions].sort((a, b) => a - b) : transactions;
   let d = 1;
   let w = 1;
   trans.forEach((tran, i) => {
@@ -148,6 +148,8 @@ btnLogin.addEventListener("click", function (event) {
     inputLoginPin.blur();
     //4. UpdateUI
     updateUI(currentUser);
+  } else {
+    alert(`Wrong Login Or PIN`);
   }
 });
 
@@ -212,7 +214,7 @@ btnClose.addEventListener("click", function (event) {
   inputClosePin.blur();
 });
 
-btnSort.addEventListener("click", function(event){
+btnSort.addEventListener("click", function (event) {
   event.preventDefault();
   displayTransactions(currentUser.transactions, !sorted);
   sorted = !sorted;
