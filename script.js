@@ -122,6 +122,10 @@ const displayTransactions = function (transactions, sort = false) {
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
+  //Add Styling to the populated rows
+  [...document.querySelectorAll(".movements__row")].forEach(
+    (row, i) => i % 2 === 0 && (row.style.backgroundColor = "#f3f3f3")
+  );
 };
 
 const displayBalance = function (account) {
