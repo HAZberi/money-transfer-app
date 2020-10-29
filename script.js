@@ -116,8 +116,9 @@ const displayTransactions = function (transactions, sort = false) {
     <div class="movements__date">3 days ago</div>
     <div class="movements__value">${
       tran.amount > 0
-        ? "$" + tran.amount.toFixed(2)
-        : "-$" + Math.abs(tran.amount).toFixed(2)
+        ? "$" + new Intl.NumberFormat().format(tran.amount.toFixed(2))
+        : "-$" +
+          new Intl.NumberFormat().format(Math.abs(tran.amount).toFixed(2))
     }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
@@ -134,7 +135,7 @@ const displayBalance = function (account) {
   }, 0);
   labelBalance.textContent = `${
     account.balance > 0
-      ? "$" + account.balance.toFixed(2)
+      ? "$" + new Intl.NumberFormat().format(account.balance.toFixed(2))
       : "-$" + Math.abs(account.balance).toFixed(2)
   }`;
 };
@@ -143,17 +144,23 @@ const displaySummary = function (account) {
   const deposits = account.transactions
     .filter((tr) => tr.amount > 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumIn.textContent = `$${deposits.toFixed(2)}`;
+  labelSumIn.textContent = `$${new Intl.NumberFormat().format(
+    deposits.toFixed(2)
+  )}`;
   const withdrawals = account.transactions
     .filter((tr) => tr.amount < 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumOut.textContent = `$${Math.abs(withdrawals).toFixed(2)}`;
+  labelSumOut.textContent = `$${new Intl.NumberFormat().format(
+    Math.abs(withdrawals).toFixed(2)
+  )}`;
   const interest = account.transactions
     .filter((tr) => tr.amount > 0)
     .map((tr) => (tr.amount * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
-  labelSumInterest.textContent = `$${interest.toFixed(2)}`;
+  labelSumInterest.textContent = `$${new Intl.NumberFormat().format(
+    interest.toFixed(2)
+  )}`;
 };
 
 const updateUI = function (account) {
