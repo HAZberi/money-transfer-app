@@ -105,7 +105,6 @@ const displayTransactions = function (transactions, sort = false) {
     : transactions;
   let countTr = Array.from({ length: 3 }, () => 1);
   trans.forEach((tran, i) => {
-    //const type = tran > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
     <div class="movements__type movements__type--${
       tran.type === "loan" || tran.type === "deposit" ? "deposit" : "withdrawal"
@@ -115,7 +114,11 @@ const displayTransactions = function (transactions, sort = false) {
       countTr[2]++
     } ${tran.type}</div>
     <div class="movements__date">3 days ago</div>
-    <div class="movements__value">${tran.amount}$</div>
+    <div class="movements__value">${
+      tran.amount > 0
+        ? "$" + tran.amount.toFixed(2)
+        : "-$" + Math.abs(tran.amount).toFixed(2)
+    }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
@@ -125,24 +128,28 @@ const displayBalance = function (account) {
   account.balance = account.transactions.reduce(function (bal, cur) {
     return (bal += cur.amount);
   }, 0);
-  labelBalance.textContent = `${account.balance}$`;
+  labelBalance.textContent = `${
+    account.balance > 0
+      ? "$" + account.balance.toFixed(2)
+      : "-$" + Math.abs(account.balance).toFixed(2)
+  }`;
 };
 
 const displaySummary = function (account) {
   const deposits = account.transactions
     .filter((tr) => tr.amount > 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumIn.textContent = `${deposits}$`;
+  labelSumIn.textContent = `$${deposits.toFixed(2)}`;
   const withdrawals = account.transactions
     .filter((tr) => tr.amount < 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumOut.textContent = `${Math.abs(withdrawals)}$`;
+  labelSumOut.textContent = `$${Math.abs(withdrawals).toFixed(2)}`;
   const interest = account.transactions
     .filter((tr) => tr.amount > 0)
     .map((tr) => (tr.amount * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
-  labelSumInterest.textContent = `${interest}$`;
+  labelSumInterest.textContent = `$${interest.toFixed(2)}`;
 };
 
 const updateUI = function (account) {
@@ -226,7 +233,7 @@ btnLoan.addEventListener("click", function (event) {
   event.preventDefault();
   console.log();
   //get user input
-  const amount = Number(inputLoanAmount.value);
+  const amount = Math.floor(inputLoanAmount.value);
   if (
     amount > 0 &&
     currentUser.transactions.some((tr) => tr.amount > amount * 0.25)
