@@ -7,27 +7,61 @@
 // Data
 const account1 = {
   owner: "Hassaan Ahmed Zuberi",
-  transactions: [200, 450, -400, 3000, -650, -130, 70, 1300],
+  transactions: [
+    { amount: 200, type: "deposit" },
+    { amount: 450, type: "deposit" },
+    { amount: -400, type: "withdraw" },
+    { amount: 3000, type: "deposit" },
+    { amount: -650, type: "withdraw" },
+    { amount: -130, type: "withdraw" },
+    { amount: 70, type: "deposit" },
+    { amount: 1300, type: "deposit" },
+  ],
   interestRate: 1.2, // %
   pin: 1111,
 };
 
 const account2 = {
   owner: "Muhammad Omar Chohan",
-  transactions: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+  transactions: [
+    { amount: 5000, type: "deposit" },
+    { amount: 3400, type: "deposit" },
+    { amount: -150, type: "withdraw" },
+    { amount: -790, type: "withdraw" },
+    { amount: -3210, type: "withdraw" },
+    { amount: -1000, type: "withdraw" },
+    { amount: 8500, type: "deposit" },
+    { amount: -30, type: "withdraw" },
+  ],
   interestRate: 1.5,
   pin: 2222,
 };
 
 const account3 = {
   owner: "Saifullah Khan Chughtai",
-  transactions: [200, -200, 340, -300, -20, 50, 4000, -460],
+  transactions: [
+    { amount: 200, type: "deposit" },
+    { amount: -200, type: "withdraw" },
+    { amount: 340, type: "deposit" },
+    { amount: -300, type: "withdraw" },
+    { amount: -20, type: "withdraw" },
+    { amount: 50, type: "deposit" },
+    { amount: 4000, type: "deposit" },
+    { amount: -460, type: "withdraw" },
+  ],
   interestRate: 0.7,
   pin: 3333,
 };
 
 const account4 = {
   owner: "Hasan Iqbal Baig",
+  transactions: [
+    { amount: 430, type: "deposit" },
+    { amount: 1000, type: "deposit" },
+    { amount: 700, type: "deposit" },
+    { amount: 50, type: "deposit" },
+    { amount: 90, type: "deposit" },
+  ],
   transactions: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
