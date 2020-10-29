@@ -16,6 +16,7 @@ const account1 = {
     { amount: -130, type: "withdraw" },
     { amount: 70, type: "deposit" },
     { amount: 1300, type: "deposit" },
+    { amount: 1000, type: "loan" },
   ],
   interestRate: 1.2, // %
   pin: 1111,
@@ -32,6 +33,7 @@ const account2 = {
     { amount: -1000, type: "withdraw" },
     { amount: 8500, type: "deposit" },
     { amount: -30, type: "withdraw" },
+    { amount: 1000, type: "loan" },
   ],
   interestRate: 1.5,
   pin: 2222,
@@ -48,6 +50,7 @@ const account3 = {
     { amount: 50, type: "deposit" },
     { amount: 4000, type: "deposit" },
     { amount: -460, type: "withdraw" },
+    { amount: 1000, type: "loan" },
   ],
   interestRate: 0.7,
   pin: 3333,
@@ -61,8 +64,8 @@ const account4 = {
     { amount: 700, type: "deposit" },
     { amount: 50, type: "deposit" },
     { amount: 90, type: "deposit" },
+    { amount: 1000, type: "loan" },
   ],
-  transactions: [430, 1000, 700, 50, 90],
   interestRate: 1,
   pin: 4444,
 };
@@ -97,17 +100,22 @@ const inputClosePin = document.querySelector(".form__input--pin");
 
 const displayTransactions = function (transactions, sort = false) {
   containerTransactions.innerHTML = "";
-  const trans = sort ? [...transactions].sort((a, b) => a - b) : transactions;
-  let d = 1;
-  let w = 1;
+  const trans = sort
+    ? [...transactions].sort((a, b) => a.amount - b.amount)
+    : transactions;
+  let countTr = Array.from({ length: 3 }, () => 1);
   trans.forEach((tran, i) => {
-    const type = tran > 0 ? "deposit" : "withdrawal";
+    //const type = tran > 0 ? "deposit" : "withdrawal";
     const html = `<div class="movements__row">
-    <div class="movements__type movements__type--${type}">${
-      (type === "deposit" && d++) || w++
-    } ${type}</div>
+    <div class="movements__type movements__type--${
+      tran.type === "loan" || tran.type === "deposit" ? "deposit" : "withdrawal"
+    }">${
+      (tran.type === "deposit" && countTr[0]++) ||
+      (tran.type === "withdraw" && countTr[1]++) ||
+      countTr[2]++
+    } ${tran.type}</div>
     <div class="movements__date">3 days ago</div>
-    <div class="movements__value">${tran}$</div>
+    <div class="movements__value">${tran.amount}$</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
   });
@@ -115,26 +123,35 @@ const displayTransactions = function (transactions, sort = false) {
 
 const displayBalance = function (account) {
   account.balance = account.transactions.reduce(function (bal, cur) {
-    return (bal += cur);
+    return (bal += cur.amount);
   }, 0);
   labelBalance.textContent = `${account.balance}$`;
 };
 
 const displaySummary = function (account) {
   const deposits = account.transactions
-    .filter((tr) => tr > 0)
-    .reduce((sum, tr) => sum + tr, 0);
+    .filter((tr) => tr.amount > 0)
+    .reduce((sum, tr) => sum + tr.amount, 0);
   labelSumIn.textContent = `${deposits}$`;
   const withdrawals = account.transactions
-    .filter((tr) => tr < 0)
-    .reduce((sum, tr) => sum + tr, 0);
+    .filter((tr) => tr.amount < 0)
+    .reduce((sum, tr) => sum + tr.amount, 0);
   labelSumOut.textContent = `${Math.abs(withdrawals)}$`;
   const interest = account.transactions
-    .filter((tr) => tr > 0)
-    .map((tr) => (tr * account.interestRate) / 100)
+    .filter((tr) => tr.amount > 0)
+    .map((tr) => (tr.amount * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
   labelSumInterest.textContent = `${interest}$`;
+};
+
+const updateUI = function (account) {
+  //1. Display Transactions
+  displayTransactions(account.transactions);
+  //2. Display Balance
+  displayBalance(account);
+  //3. Display Summary
+  displaySummary(account);
 };
 
 const createUsernames = function (accs) {
@@ -147,15 +164,6 @@ const createUsernames = function (accs) {
   });
 };
 createUsernames(accounts);
-
-const updateUI = function (account) {
-  //1. Display Transactions
-  displayTransactions(account.transactions);
-  //2. Display Balance
-  displayBalance(account);
-  //3. Display Summary
-  displaySummary(account);
-};
 
 //Add Event Handelers
 
@@ -183,7 +191,7 @@ btnLogin.addEventListener("click", function (event) {
     //4. UpdateUI
     updateUI(currentUser);
   } else {
-    alert(`Wrong Login Or PIN`);
+    alert(`Wrong Username Or PIN`);
   }
 });
 
@@ -206,8 +214,8 @@ btnTransfer.addEventListener("click", function (event) {
     currentUser?.balance >= amount &&
     currentUser.username !== recAcc.username
   ) {
-    currentUser.transactions.push(-amount);
-    recAcc.transactions.push(amount);
+    currentUser.transactions.push({ type: "withdraw", amount: -amount });
+    recAcc.transactions.push({ type: "deposit", amount: amount });
     //update account
     updateUI(currentUser);
   }
@@ -219,10 +227,18 @@ btnLoan.addEventListener("click", function (event) {
   console.log();
   //get user input
   const amount = Number(inputLoanAmount.value);
-  if (amount > 0 && currentUser.transactions.some((tr) => tr > amount * 0.25)) {
-    currentUser.transactions.push(amount);
+  if (
+    amount > 0 &&
+    currentUser.transactions.some((tr) => tr.amount > amount * 0.25)
+  ) {
+    currentUser.transactions.push({ type: "loan", amount: amount });
     console.log(`Loan Successfully Approved`);
+  } else {
+    alert(`Loan Request Declined`);
   }
+  //clear fields
+  inputLoanAmount.value = "";
+  inputLoanAmount.blur();
   //update UI
   updateUI(currentUser);
 });
