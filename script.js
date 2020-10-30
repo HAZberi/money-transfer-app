@@ -27,9 +27,9 @@ const account1 = {
     "2020-04-01T10:17:24.185Z",
     "2020-05-08T14:11:59.604Z",
     "2020-05-27T17:01:17.194Z",
-    "2020-07-11T23:36:17.929Z",
-    "2020-07-12T10:51:36.790Z",
-    "2020-07-26T12:01:20.894Z",
+    "2020-10-26T23:36:17.929Z",
+    "2020-10-28T10:51:36.790Z",
+    "2020-10-29T12:01:20.894Z",
   ],
 };
 
@@ -147,7 +147,7 @@ const displayTransactions = function (account, sort = false) {
   let countTr = Array.from({ length: 3 }, () => 1);
   trans.forEach((tran, i) => {
     const html = `<div class="movements__date">${dateFormat(
-      new Date(account.movementsDates[i])
+      new Date(account.movementsDates[i]), "days ago"
     )}</div>
     <div class="movements__row">
     <div class="movements__type movements__type--${
@@ -228,14 +228,25 @@ const createUsernames = function (accs) {
 };
 createUsernames(accounts);
 
-const dateFormat = function (date = new Date()) {
+const dateFormat = function (date = new Date(), option = "default") {
+  console.log(option);
+  const calcDaysPassed = (date1, date2) =>
+    Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
   const weekday = date.toLocaleString("default", { weekday: "short" });
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
   const hours = date.getHours();
   const min = date.getMinutes();
-  return `${weekday}, ${month} ${day}, ${year}`;
+  if (option === "days ago") {
+    let daysPassed = calcDaysPassed(new Date(), date);
+    if (daysPassed === 0) return `Today`;
+    if (daysPassed === 1) return `Yesterday`;
+    if (daysPassed < 6) return `${daysPassed} days ago`;
+    return `${weekday}, ${month} ${day}, ${year}`;
+  } else {
+    return `${weekday}, ${month} ${day}, ${year}`;
+  }
 };
 
 //Add Event Handelers
