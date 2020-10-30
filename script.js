@@ -159,9 +159,9 @@ const displayTransactions = function (account, sort = false) {
     } ${tran.type}</div>
     <div class="movements__value">${
       tran.amount > 0
-        ? "$" + new Intl.NumberFormat().format(tran.amount.toFixed(2))
-        : "-$" +
-          new Intl.NumberFormat().format(Math.abs(tran.amount).toFixed(2))
+        ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(tran.amount.toFixed(2))
+        : "-" +
+          new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(Math.abs(tran.amount).toFixed(2))
     }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
@@ -171,7 +171,6 @@ const displayTransactions = function (account, sort = false) {
     //     "#f3f3f3";
     // }
   });
-  console.log(account);
 };
 
 const displayBalance = function (account) {
@@ -180,8 +179,8 @@ const displayBalance = function (account) {
   }, 0);
   labelBalance.textContent = `${
     account.balance > 0
-      ? "$" + new Intl.NumberFormat().format(account.balance.toFixed(2))
-      : "-$" + Math.abs(account.balance).toFixed(2)
+      ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(account.balance.toFixed(2))
+      : "-" + Math.abs(account.balance).toFixed(2)
   }`;
 };
 
@@ -189,13 +188,13 @@ const displaySummary = function (account) {
   const deposits = account.transactions
     .filter((tr) => tr.amount > 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumIn.textContent = `$${new Intl.NumberFormat().format(
+  labelSumIn.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
     deposits.toFixed(2)
   )}`;
   const withdrawals = account.transactions
     .filter((tr) => tr.amount < 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumOut.textContent = `$${new Intl.NumberFormat().format(
+  labelSumOut.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
     Math.abs(withdrawals).toFixed(2)
   )}`;
   const interest = account.transactions
@@ -203,7 +202,7 @@ const displaySummary = function (account) {
     .map((tr) => (tr.amount * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
-  labelSumInterest.textContent = `$${new Intl.NumberFormat().format(
+  labelSumInterest.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
     interest.toFixed(2)
   )}`;
 };
@@ -229,15 +228,22 @@ const createUsernames = function (accs) {
 createUsernames(accounts);
 
 const dateFormat = function (date = new Date(), option = "default") {
-  console.log(option);
   const calcDaysPassed = (date1, date2) =>
     Math.round(Math.abs((date1 - date2) / (1000 * 60 * 60 * 24)));
   const weekday = date.toLocaleString("default", { weekday: "short" });
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
-  const hours = date.getHours();
-  const min = date.getMinutes();
+  // const hours = date.getHours();
+  // const min = date.getMinutes();
+  const options = {
+    hour: 'numeric',
+    minute: 'numeric',
+    weekday: 'short',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  };
   if (option === "days ago") {
     let daysPassed = calcDaysPassed(new Date(), date);
     if (daysPassed === 0) return `Today`;
@@ -245,7 +251,7 @@ const dateFormat = function (date = new Date(), option = "default") {
     if (daysPassed < 6) return `${daysPassed} days ago`;
     return `${weekday}, ${month} ${day}, ${year}`;
   } else {
-    return `${weekday}, ${month} ${day}, ${year}`;
+    return new Intl.DateTimeFormat(navigator.language, options).format(date);;
   }
 };
 
@@ -313,6 +319,8 @@ btnTransfer.addEventListener("click", function (event) {
 
     //update account
     updateUI(currentUser);
+  } else {
+    alert('TRANSFER DECLINED');
   }
 });
 
