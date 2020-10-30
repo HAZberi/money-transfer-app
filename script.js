@@ -98,11 +98,11 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
-const displayTransactions = function (transactions, sort = false) {
+const displayTransactions = function (account, sort = false) {
   containerTransactions.innerHTML = "";
   const trans = sort
-    ? [...transactions].sort((a, b) => a.amount - b.amount)
-    : transactions;
+    ? [...account.transactions].sort((a, b) => a.amount - b.amount)
+    : account.transactions;
   let countTr = Array.from({ length: 3 }, () => 1);
   trans.forEach((tran, i) => {
     const html = `<div class="movements__row">
@@ -122,11 +122,12 @@ const displayTransactions = function (transactions, sort = false) {
     }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
+    //Add Styling to the populated rows
+    if (i % 2 === 0) {
+      document.querySelector(".movements__row").style.backgroundColor =
+        "#f3f3f3";
+    }
   });
-  //Add Styling to the populated rows
-  [...document.querySelectorAll(".movements__row")].forEach(
-    (row, i) => i % 2 === 0 && (row.style.backgroundColor = "#f3f3f3")
-  );
 };
 
 const displayBalance = function (account) {
@@ -165,7 +166,7 @@ const displaySummary = function (account) {
 
 const updateUI = function (account) {
   //1. Display Transactions
-  displayTransactions(account.transactions);
+  displayTransactions(account);
   //2. Display Balance
   displayBalance(account);
   //3. Display Summary
