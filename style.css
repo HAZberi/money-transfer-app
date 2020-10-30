@@ -131,16 +131,15 @@ nav {
 }
 
 .movements__row {
-  padding: 2.25rem 4rem;
+  padding: 2rem 4rem;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #eee;
 }
 
 .movements__type {
   font-size: 1.1rem;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 400;
   color: #fff;
   padding: 0.1rem 1rem;
   border-radius: 10rem;
@@ -148,18 +147,22 @@ nav {
 }
 
 .movements__date {
-  font-size: 1.1rem;
+  width: 100%;
+  padding: 0.3rem 4rem;
+  display: flex;
+  font-size: 1.2rem;
   text-transform: uppercase;
   font-weight: 500;
-  color: #666;
+  color: rgb(78, 78, 78);
+  background-color: #f3f3f3;
 }
 
 .movements__type--deposit {
-  background-image: linear-gradient(to top left, #39b385, #9be15d);
+  background-image: linear-gradient(to bottom right, #39b385, #5de163);
 }
 
 .movements__type--withdrawal {
-  background-image: linear-gradient(to top left, #e52a5a, #ff585f);
+  background-image: linear-gradient(to bottom right, #e52a5a, #ff585f);
 }
 
 .movements__value {
