@@ -172,11 +172,6 @@ const displayTransactions = function (account, sort = false) {
     }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
-    //Add Styling to the populated rows (DEPRECATED)
-    // if (i % 2 === 0) {
-    //   document.querySelector(".movements__row").style.backgroundColor =
-    //     "#f3f3f3";
-    // }
   });
 };
 
@@ -247,8 +242,6 @@ const dateFormat = function (date = new Date(), option = "default") {
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "long" });
   const year = date.getFullYear();
-  // const hours = date.getHours();
-  // const min = date.getMinutes();
   const options = {
     hour: "numeric",
     minute: "numeric",
