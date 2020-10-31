@@ -2,7 +2,7 @@
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// BANKIST APP
+// Money Transfer APP
 
 // Data
 const account1 = {
@@ -175,6 +175,14 @@ const displayTransactions = function (account, sort = false) {
   });
 };
 
+///Global Variables and Checkers
+
+let currentUser = {};
+let sorted = false;
+let startInterval;
+
+///Functionalities
+
 const displayBalance = function (account) {
   account.balance = account.transactions.reduce(function (bal, cur) {
     return (bal += cur.amount);
@@ -263,13 +271,11 @@ const dateFormat = function (date = new Date(), option = "default") {
 
 //Add Event Handelers
 
-let currentUser = {};
-let sorted = false;
 
 //A Fake Login by Default
-currentUser = account1;
-updateUI(currentUser);
-containerApp.style.opacity = 1;
+// currentUser = account1;
+// updateUI(currentUser);
+// containerApp.style.opacity = 1;
 
 btnLogin.addEventListener("click", function (event) {
   //to prevent submitting form
@@ -295,6 +301,9 @@ btnLogin.addEventListener("click", function (event) {
   } else {
     alert(`Wrong Username Or PIN`);
   }
+  //5. Set LogOut Timer
+  if(startInterval) clearInterval(startInterval);
+  startInterval = setLogOutTimer();
 });
 
 btnTransfer.addEventListener("click", function (event) {
@@ -328,6 +337,9 @@ btnTransfer.addEventListener("click", function (event) {
   } else {
     alert("TRANSFER DECLINED");
   }
+  //5. Set LogOut Timer
+  clearInterval(startInterval);
+  startInterval = setLogOutTimer();
 });
 
 btnLoan.addEventListener("click", function (event) {
@@ -336,6 +348,12 @@ btnLoan.addEventListener("click", function (event) {
   console.log();
   //get user input
   const amount = Math.floor(inputLoanAmount.value);
+    //clear fields
+    inputLoanAmount.value = "";
+    inputLoanAmount.blur();
+  //5. Set LogOut Timer
+  clearInterval(startInterval);
+  startInterval = setLogOutTimer();
   setTimeout(() => {
     if (
       amount > 0 &&
@@ -348,7 +366,7 @@ btnLoan.addEventListener("click", function (event) {
       console.log(`Loan Successfully Approved`);
     } else {
       alert(
-        `Loan Request of ${Intl.NumberFormat('en-US', {
+        `Loan Request of ${Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",
         }).format(amount)} is Declined`
@@ -357,9 +375,6 @@ btnLoan.addEventListener("click", function (event) {
     //update UI
     updateUI(currentUser);
   }, 30000);
-  //clear fields
-  inputLoanAmount.value = "";
-  inputLoanAmount.blur();
 });
 
 btnClose.addEventListener("click", function (event) {
