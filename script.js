@@ -147,7 +147,8 @@ const displayTransactions = function (account, sort = false) {
   let countTr = Array.from({ length: 3 }, () => 1);
   trans.forEach((tran, i) => {
     const html = `<div class="movements__date">${dateFormat(
-      new Date(account.movementsDates[i]), "days ago"
+      new Date(account.movementsDates[i]),
+      "days ago"
     )}</div>
     <div class="movements__row">
     <div class="movements__type movements__type--${
@@ -159,9 +160,15 @@ const displayTransactions = function (account, sort = false) {
     } ${tran.type}</div>
     <div class="movements__value">${
       tran.amount > 0
-        ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(tran.amount.toFixed(2))
+        ? new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(tran.amount.toFixed(2))
         : "-" +
-          new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(Math.abs(tran.amount).toFixed(2))
+          new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(Math.abs(tran.amount).toFixed(2))
     }</div>
     </div>`;
     containerTransactions.insertAdjacentHTML("afterbegin", html);
@@ -179,7 +186,10 @@ const displayBalance = function (account) {
   }, 0);
   labelBalance.textContent = `${
     account.balance > 0
-      ? new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(account.balance.toFixed(2))
+      ? new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(account.balance.toFixed(2))
       : "-" + Math.abs(account.balance).toFixed(2)
   }`;
 };
@@ -188,23 +198,26 @@ const displaySummary = function (account) {
   const deposits = account.transactions
     .filter((tr) => tr.amount > 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumIn.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
-    deposits.toFixed(2)
-  )}`;
+  labelSumIn.textContent = `${new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(deposits.toFixed(2))}`;
   const withdrawals = account.transactions
     .filter((tr) => tr.amount < 0)
     .reduce((sum, tr) => sum + tr.amount, 0);
-  labelSumOut.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
-    Math.abs(withdrawals).toFixed(2)
-  )}`;
+  labelSumOut.textContent = `${new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(Math.abs(withdrawals).toFixed(2))}`;
   const interest = account.transactions
     .filter((tr) => tr.amount > 0)
     .map((tr) => (tr.amount * account.interestRate) / 100)
     .filter((int) => int > 1)
     .reduce((sum, int) => sum + int, 0);
-  labelSumInterest.textContent = `${new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(
-    interest.toFixed(2)
-  )}`;
+  labelSumInterest.textContent = `${new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(interest.toFixed(2))}`;
 };
 
 const updateUI = function (account) {
@@ -237,12 +250,12 @@ const dateFormat = function (date = new Date(), option = "default") {
   // const hours = date.getHours();
   // const min = date.getMinutes();
   const options = {
-    hour: 'numeric',
-    minute: 'numeric',
-    weekday: 'short',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+    hour: "numeric",
+    minute: "numeric",
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   };
   if (option === "days ago") {
     let daysPassed = calcDaysPassed(new Date(), date);
@@ -251,7 +264,7 @@ const dateFormat = function (date = new Date(), option = "default") {
     if (daysPassed < 6) return `${daysPassed} days ago`;
     return `${weekday}, ${month} ${day}, ${year}`;
   } else {
-    return new Intl.DateTimeFormat(navigator.language, options).format(date);;
+    return new Intl.DateTimeFormat(navigator.language, options).format(date);
   }
 };
 
@@ -320,7 +333,7 @@ btnTransfer.addEventListener("click", function (event) {
     //update account
     updateUI(currentUser);
   } else {
-    alert('TRANSFER DECLINED');
+    alert("TRANSFER DECLINED");
   }
 });
 
@@ -330,23 +343,30 @@ btnLoan.addEventListener("click", function (event) {
   console.log();
   //get user input
   const amount = Math.floor(inputLoanAmount.value);
-  if (
-    amount > 0 &&
-    currentUser.transactions.some((tr) => tr.amount > amount * 0.25)
-  ) {
-    //TRANSFER LOAN
-    currentUser.transactions.push({ type: "loan", amount: amount });
-    //TIME STAMPS
-    currentUser.movementsDates.push(new Date().toISOString());
-    console.log(`Loan Successfully Approved`);
-  } else {
-    alert(`Loan Request Declined`);
-  }
+  setTimeout(() => {
+    if (
+      amount > 0 &&
+      currentUser.transactions.some((tr) => tr.amount > amount * 0.25)
+    ) {
+      //TRANSFER LOAN
+      currentUser.transactions.push({ type: "loan", amount: amount });
+      //TIME STAMPS
+      currentUser.movementsDates.push(new Date().toISOString());
+      console.log(`Loan Successfully Approved`);
+    } else {
+      alert(
+        `Loan Request of ${Intl.NumberFormat('en-US', {
+          style: "currency",
+          currency: "USD",
+        }).format(amount)} is Declined`
+      );
+    }
+    //update UI
+    updateUI(currentUser);
+  }, 30000);
   //clear fields
   inputLoanAmount.value = "";
   inputLoanAmount.blur();
-  //update UI
-  updateUI(currentUser);
 });
 
 btnClose.addEventListener("click", function (event) {
