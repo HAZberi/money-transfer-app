@@ -183,6 +183,25 @@ let startInterval;
 
 ///Functionalities
 
+const setLogOutTimer = function(){
+  let time = 120;
+  const timer = function(){
+    const min = parseInt(time/60);
+    const sec = time % 60;
+    if(time > 0){
+      labelTimer.textContent = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    }else{
+      containerApp.style.opacity = 0;
+      clearInterval(setInterval);
+    }
+    time--;
+  };
+  timer();
+  startInterval = setInterval(timer, 1000);
+
+  return startInterval;
+}
+
 const displayBalance = function (account) {
   account.balance = account.transactions.reduce(function (bal, cur) {
     return (bal += cur.amount);
